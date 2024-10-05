@@ -1,7 +1,10 @@
-import React,{useEffect,useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import './App.css';
 import io from 'socket.io-client';
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 const socket = io('http://localhost:8000/');
 function App() {
@@ -12,38 +15,41 @@ function App() {
   //Client,server connection using cors
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const response = await axios.get('http://localhost:8000/');//data from server
-            setData(response.data);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
+      try {
+        const response = await axios.get('http://localhost:8000/');//data from server
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
     fetchData();
-}, [])
+  }, [])
 
-//Socket.io message event
-useEffect(() => {
-  socket.on('message', (message) => {
+  //Socket.io message event
+  useEffect(() => {
+    socket.on('message', (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
-  });
+    });
 
-  return () => {
+    return () => {
       socket.off('message');
-  };
-}, [])
+    };
+  }, [])
 
-const sendMessage = () => {
-  if (input) {
+  const sendMessage = () => {
+    if (input) {
       socket.emit('message', input);
       setInput('');
+    }
   }
-}
 
   return (
     <div className="App">
-      
-    </div> 
+        <Routes>
+          <Route path='/' element={<Login/>}></Route>
+          <Route path='/signup'element={<Signup/>}></Route>
+        </Routes>
+    </div>
 
   );
 }
